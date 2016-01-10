@@ -7,14 +7,34 @@ public class Prompter {
 		mGame = game;
 	}
 
+	public void play() {
+		while(mGame.getRemainingTries() > 0){
+			displayProgress();
+			promptForGuess();
+		}
+	}
+
 	public boolean promptForGuess(){
 		Console console = System.console();
-		String guessAsString = console.readLine("Please enter a guess...");
-		char guess = guessAsString.charAt(0);
-		return mGame.applyGuess(guess);
+		boolean isHit = false;
+		boolean isValidGuess = false;
+		while(! isValidGuess){
+			String guessAsString = console.readLine("Please enter a guess...");
+			char guess = guessAsString.charAt(0);
+			try {
+				isHit = mGame.applyGuess(guess);
+				isValidGuess = true;
+			} catch (IllegalArgumentException iae){
+				console.printf("%s please try again.\n", iae.getMessage());
+			}
+		}
+		return isHit;
 	}
 
 	public void displayProgress() {
-		System.out.printf("Try to solve: %s\n", mGame.getCurrentProgress());
+		System.out.printf("You have %d tries left to solve: %s\n", 
+								mGame.getRemainingTries(),
+								mGame.getCurrentProgress());
+
 	}	
 }
